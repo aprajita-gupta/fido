@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Bank Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .dashboard {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+            width: auto;
+            margin: 5px;
+        }
+
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .hospitals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .hospital-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .hospital-card.open {
+            border-left-color: #28a745;
+        }
+
+        .hospital-card.closed {
+            border-left-color: #dc3545;
+        }
+
+        .blood-inventory {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .blood-type {
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-open {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-closed {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .distance {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .time-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .profile-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .appointment-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .appointment-item.pending {
+            border-left-color: #ffc107;
+        }
+
+        .appointment-item.confirmed {
+            border-left-color: #28a745;
+        }
+
+        .appointment-item.completed {
+            border-left-color: #6c757d;
+        }
+
+        .appointment-item.cancelled {
+            border-left-color: #dc3545;
+        }
+
+        .emergency-item {
+            background: #fff3cd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .contact-info {
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .auth-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .blood-inventory {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: #dc3545;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8d7da;
+            border-radius: 5px;
+        }
+
+        .success {
+            color: #155724;
+            margin-top: 10px;
+            padding: 10px;
+            background: #d4edda;
+            border-radius: 5px;
+        }
+
+        .warning {
+            color: #856404;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-heartbeat"></i> Pet Blood Bank</h1>
+            <p>Emergency Pet Blood Bank & Appointment System</p>
+        </div>
+
+        <!-- Authentication Section -->
+        <div id="auth-section" class="auth-container">
+            <div class="tab-container">
+                <div class="tab active" onclick="showLogin()">Login</div>
+                <div class="tab" onclick="showRegister()">Register</div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="hidden">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="register-role" required onchange="togglePincodeField()">
+                        <option value="">Select Role</option>
+                        <option value="owner">Pet Owner</option>
+                        <option value="doctor">Veterinarian</option>
+                        <option value="hospital">Hospital Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number (10 digits)</label>
+                    <input type="tel" id="register-phone" required maxlength="10" pattern="[0-9]{10}">
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="register-address" required>
+                </div>
+                <div class="form-group" id="pincode-field" style="display: none;">
+                    <label>Pincode (6 digits)</label>
+                    <input type="text" id="register-pincode" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+            </form>
+
+            <div id="auth-message"></div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="hidden">
+            <div class="user-info">
+                <div>
+                    <h3 id="user-name">Welcome!</h3>
+                    <p id="user-role"></p>
+                </div>
+                <div>
+                    <button class="btn btn-secondary" onclick="showProfile()" style="width: auto; margin-right: 10px;">
+                        <i class="fas fa-user"></i> Profile
+                    </button>
+                    <button class="btn btn-secondary" onclick="logout()" style="width: auto;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="profile-section hidden">
+                <h3><i class="fas fa-user-edit"></i> Update Profile</h3>
+                <form id="profile-form">
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="profile-name">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number (10 digits)</label>
+                            <input type="tel" id="profile-phone" maxlength="10" pattern="[0-9]{10}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="profile-address">
+                    </div>
+                    <div class="form-group" id="profile-pincode-field">
+                        <label>Pincode (6 digits)</label>
+                        <input type="text" id="profile-pincode" maxlength="6" pattern="[0-9]{6}">
+                    </div>
+                    <div class="two-column">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="profile-current-password">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="profile-new-password">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-save"></i> Update Profile
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="hideProfile()">
+                        Cancel
+                    </button>
+                </form>
+            </div>
+
+            <div class="dashboard" id="main-dashboard">
+                <!-- Appointments Dashboard -->
+                <div class="card" id="appointments-card">
+                    <h3><i class="fas fa-calendar"></i> Upcoming Appointments</h3>
+                    <button class="btn" onclick="loadAppointments()">
+                        <i class="fas fa-refresh"></i> Refresh Appointments
+                    </button>
+                    <div id="appointments-list"></div>
+                </div>
+
+                <!-- Hospital/Clinic Setup Card -->
+                <div class="card" id="setup-card">
+                    <div id="setup-warning" class="warning">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Please complete your hospital/clinic setup to receive appointments and emergency notifications.
+                    </div>
+                    <div id="setup-content"></div>
+                </div>
+
+                <!-- Blood Stock Management (Hospital Admins) -->
+                <div class="card" id="blood-stock-card">
+                    <h3><i class="fas fa-tint"></i> Update Blood Stock</h3>
+                    <form id="blood-stock-form">
+                        <div class="blood-inventory">
+                            <div>
+                                <label>Type A</label>
+                                <input type="number" id="stock-blood-a" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>Type B</label>
+                                <input type="number" id="stock-blood-b" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>Type AB</label>
+                                <input type="number" id="stock-blood-ab" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>Type O</label>
+                                <input type="number" id="stock-blood-o" min="0" value="0">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">
+                            <i class="fas fa-save"></i> Update Blood Stock
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Emergency Notifications (Hospital/Doctor) -->
+                <div class="card" id="emergency-notifications-card">
+                    <h3><i class="fas fa-bell"></i> Emergency Notifications</h3>
+                    <button class="btn" onclick="loadEmergencyRequests()">
+                        <i class="fas fa-refresh"></i> Refresh Notifications
+                    </button>
+                    <div id="emergency-notifications"></div>
+                </div>
+
+                <!-- Pet Owner Features -->
+                <div class="card" id="nearest-hospitals-card">
+                    <h3><i class="fas fa-map-marker-alt"></i> Nearest Blood Banks</h3>
+                    <button class="btn" onclick="loadNearestHospitals()">
+                        <i class="fas fa-search-location"></i> Find Nearest Hospitals
+                    </button>
+                    <div id="nearest-hospitals" class="hospitals-grid"></div>
+                </div>
+
+                <div class="card" id="emergency-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Emergency Request</h3>
+                    <form id="emergency-form">
+                        <div class="form-group">
+                            <label>Pet Name</label>
+                            <input type="text" id="dog-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Type Required</label>
+                            <select id="blood-type" required>
+                                <option value="">Select Blood Type</option>
+                                <option value="A">Type A</option>
+                                <option value="B">Type B</option>
+                                <option value="AB">Type AB</option>
+                                <option value="O">Type O</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="description" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-ambulance"></i> Submit Emergency Request
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card" id="clinics-list-card">
+                    <h3><i class="fas fa-clinic-medical"></i> Available Veterinary Clinics</h3>
+                    <button class="btn" onclick="loadClinics()">
+                        <i class="fas fa-refresh"></i> Refresh Clinics
+                    </button>
+                    <div id="clinics-list" class="hospitals-grid"></div>
+                </div>
+
+                <!-- Book Appointment Card -->
+                <div class="card" id="book-appointment-card">
+                    <h3><i class="fas fa-calendar-plus"></i> Book Appointment</h3>
+                    <form id="appointment-form">
+                        <div class="form-group">
+                            <label>Provider Type</label>
+                            <select id="provider-type" required onchange="loadProviders()">
+                                <option value="">Select Provider Type</option>
+                                <option value="hospital">Hospital</option>
+                                <option value="doctor">Veterinarian</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Provider</label>
+                            <select id="provider-select" required>
+                                <option value="">Select a provider first</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Pet Name</label>
+                            <input type="text" id="appointment-pet-name" required>
+                        </div>
+                        <div class="two-column">
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="appointment-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Time</label>
+                                <input type="time" id="appointment-time" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="appointment-description" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn">
+                            <i class="fas fa-calendar-plus"></i> Book Appointment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentUser = null;
+        let authToken = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('register-form').addEventListener('submit', handleRegister);
+            document.getElementById('emergency-form').addEventListener('submit', handleEmergencyRequest);
+            document.getElementById('profile-form').addEventListener('submit', handleProfileUpdate);
+            document.getElementById('blood-stock-form').addEventListener('submit', handleBloodStockUpdate);
+            document.getElementById('appointment-form').addEventListener('submit', handleAppointmentBooking);
+            
+            // Set minimum date to today
+            document.getElementById('appointment-date').min = new Date().toISOString().split('T')[0];
+        });
+
+        function togglePincodeField() {
+            const role = document.getElementById('register-role').value;
+            const pincodeField = document.getElementById('pincode-field');
+            
+            if (role === 'hospital' || role === 'doctor') {
+                pincodeField.style.display = 'block';
+                document.getElementById('register-pincode').required = true;
+            } else {
+                pincodeField.style.display = 'none';
+                document.getElementById('register-pincode').required = false;
+            }
+        }
+
+        function validatePhone(phone) {
+            return /^\d{10}$/.test(phone);
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePincode(pincode) {
+            return /^\d{6}$/.test(pincode);
+        }
+
+        function showLogin() {
+            document.querySelector('.tab.active').classList.remove('active');
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+        }
+
+        function showRegister() {
+            document.querySelector('.tab.active').classList.remove('active');
+            document.querySelectorAll('.tab')[1].classList.add('active');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
+        }
+
+        function showProfile() {
+            document.getElementById('profile-section').classList.remove('hidden');
+            document.getElementById('main-dashboard').style.display = 'none';
+            
+            // Show/hide pincode field based on role
+            const pincodeField = document.getElementById('profile-pincode-field');
+            if (currentUser.role === 'hospital' || currentUser.role === 'doctor') {
+                pincodeField.style.display = 'block';
+            } else {
+                pincodeField.style.display = 'none';
+            }
+            
+            // Pre-fill form
+            document.getElementById('profile-name').value = currentUser.name || '';
+            document.getElementById('profile-phone').value = currentUser.phone || '';
+            document.getElementById('profile-address').value = currentUser.location?.address || '';
+            document.getElementById('profile-pincode').value = currentUser.location?.pincode || '';
+        }
+
+        function hideProfile() {
+            document.getElementById('profile-section').classList.add('hidden');
+            document.getElementById('main-dashboard').style.display = 'grid';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!validateEmail(email)) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/users/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    showMessage('Login successful!', 'success');
+                    setTimeout(showDashboard, 1000);
+                } else {
+                    showMessage(data.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('register-phone').value;
+            const email = document.getElementById('register-email').value;
+            const role = document.getElementById('register-role').value;
+            const pincode = document.getElementById('register-pincode').value;
+
+            if (!validateEmail(email)) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                showMessage('Phone number must be exactly 10 digits', 'error');
+                return;
+            }
+
+            if ((role === 'hospital' || role === 'doctor') && !validatePincode(pincode)) {
+                showMessage('Pincode must be exactly 6 digits', 'error');
+                return;
+            }
+
+            const userData = {
+                name: document.getElementById('register-name').value,
+                email: email,
+                password: document.getElementById('register-password').value,
+                role: role,
+                phone: phone,
+                location: {
+                    address: document.getElementById('register-address').value,
+                    pincode: pincode
+                }
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/users/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    showMessage('Registration successful!', 'success');
+                    setTimeout(showDashboard, 1000);
+                } else {
+                    showMessage(data.error || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('profile-phone').value;
+            const pincode = document.getElementById('profile-pincode').value;
+
+            if (phone && !validatePhone(phone)) {
+                showMessage('Phone number must be exactly 10 digits', 'error');
+                return;
+            }
+
+            if ((currentUser.role === 'hospital' || currentUser.role === 'doctor') && pincode && !validatePincode(pincode)) {
+                showMessage('Pincode must be exactly 6 digits', 'error');
+                return;
+            }
+
+            const profileData = {
+                name: document.getElementById('profile-name').value,
+                phone: phone,
+                location: {
+                    address: document.getElementById('profile-address').value,
+                    pincode: pincode
+                }
+            };
+
+            const currentPassword = document.getElementById('profile-current-password').value;
+            const newPassword = document.getElementById('profile-new-password').value;
+
+            if (currentPassword && newPassword) {
+                profileData.currentPassword = currentPassword;
+                profileData.newPassword = newPassword;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/users/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(profileData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentUser = data.user;
+                    document.getElementById('user-name').textContent = `Welcome, ${currentUser.name}!`;
+                    showMessage('Profile updated successfully!', 'success');
+                    document.getElementById('profile-form').reset();
+                    setTimeout(hideProfile, 1500);
+                } else {
+                    showMessage(data.error || 'Failed to update profile', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            document.getElementById('main-dashboard').style.display = 'grid';
+            
+            document.getElementById('user-name').textContent = `Welcome, ${currentUser.name}!`;
+            document.getElementById('user-role').textContent = `Role: ${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)}`;
+
+            // Hide all role-specific cards
+            const cards = ['nearest-hospitals-card', 'emergency-card', 'clinics-list-card', 'book-appointment-card',
+                          'setup-card', 'blood-stock-card', 'emergency-notifications-card', 'appointments-card'];
+            
+            cards.forEach(cardId => {
+                document.getElementById(cardId).style.display = 'none';
+            });
+
+            // Show appropriate cards based on role
+            if (currentUser.role === 'owner') {
+                document.getElementById('nearest-hospitals-card').style.display = 'block';
+                document.getElementById('emergency-card').style.display = 'block';
+                document.getElementById('clinics-list-card').style.display = 'block';
+                document.getElementById('book-appointment-card').style.display = 'block';
+                loadClinics();
+            } else if (currentUser.role === 'hospital') {
+                document.getElementById('appointments-card').style.display = 'block';
+                document.getElementById('setup-card').style.display = 'block';
+                document.getElementById('blood-stock-card').style.display = 'block';
+                document.getElementById('emergency-notifications-card').style.display = 'block';
+                setupHospitalDashboard();
+            } else if (currentUser.role === 'doctor') {
+                document.getElementById('appointments-card').style.display = 'block';
+                document.getElementById('setup-card').style.display = 'block';
+                document.getElementById('emergency-notifications-card').style.display = 'block';
+                setupDoctorDashboard();
+            }
+
+            loadAppointments();
+        }
+
+        async function setupHospitalDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/hospitals/my`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                const hospital = await response.json();
+                const setupContent = document.getElementById('setup-content');
+                const setupWarning = document.getElementById('setup-warning');
+
+                if (hospital && hospital.name) {
+                    setupWarning.style.display = 'none';
+                    setupContent.innerHTML = `
+                        <h3><i class="fas fa-hospital"></i> Hospital Information</h3>
+                        <p><strong>Name:</strong> ${hospital.name}</p>
+                        <p><strong>Address:</strong> ${hospital.address}</p>
+                        <p><strong>Contact:</strong> ${hospital.contact}</p>
+                        <p><strong>Hours:</strong> ${hospital.openingTime || 'Not set'} - ${hospital.closingTime || 'Not set'}</p>
+                        <button class="btn" onclick="showHospitalSetupForm()">
+                            <i class="fas fa-edit"></i> Update Hospital Info
+                        </button>
+                    `;
+                    
+                    // Load current blood stock
+                    document.getElementById('stock-blood-a').value = hospital.bloodInventory.A;
+                    document.getElementById('stock-blood-b').value = hospital.bloodInventory.B;
+                    document.getElementById('stock-blood-ab').value = hospital.bloodInventory.AB;
+                    document.getElementById('stock-blood-o').value = hospital.bloodInventory.O;
+                } else {
+                    setupWarning.style.display = 'block';
+                    showHospitalSetupForm();
+                }
+            } catch (error) {
+                showHospitalSetupForm();
+            }
+        }
+
+        async function setupDoctorDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/clinics/my`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                const clinic = await response.json();
+                const setupContent = document.getElementById('setup-content');
+                const setupWarning = document.getElementById('setup-warning');
+
+                if (clinic && clinic.clinicName) {
+                    setupWarning.style.display = 'none';
+                    setupContent.innerHTML = `
+                        <h3><i class="fas fa-clinic-medical"></i> Clinic Information</h3>
+                        <p><strong>Name:</strong> ${clinic.clinicName}</p>
+                        <p><strong>Address:</strong> ${clinic.address}</p>
+                        <p><strong>Contact:</strong> ${clinic.contact}</p>
+                        <p><strong>Hours:</strong> ${clinic.openingTime || 'Not set'} - ${clinic.closingTime || 'Not set'}</p>
+                        <button class="btn" onclick="showClinicSetupForm()">
+                            <i class="fas fa-edit"></i> Update Clinic Info
+                        </button>
+                    `;
+                } else {
+                    setupWarning.style.display = 'block';
+                    showClinicSetupForm();
+                }
+            } catch (error) {
+                showClinicSetupForm();
+            }
+        }
+
+        function showHospitalSetupForm() {
+            document.getElementById('setup-content').innerHTML = `
+                <h3><i class="fas fa-hospital"></i> Hospital Setup</h3>
+                <form id="hospital-setup-form">
+                    <div class="form-group">
+                        <label>Hospital Name</label>
+                        <input type="text" id="hospital-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="hospital-address" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Pincode</label>
+                        <input type="text" id="hospital-pincode" maxlength="6" pattern="[0-9]{6}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="tel" id="hospital-contact" maxlength="10" pattern="[0-9]{10}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Operating Hours</label>
+                        <div class="time-inputs">
+                            <input type="time" id="hospital-opening-time" required>
+                            <input type="time" id="hospital-closing-time" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-save"></i> Save Hospital Info
+                    </button>
+                </form>
+            `;
+            
+            document.getElementById('hospital-setup-form').addEventListener('submit', handleHospitalSetup);
+        }
+
+        function showClinicSetupForm() {
+            document.getElementById('setup-content').innerHTML = `
+                <h3><i class="fas fa-clinic-medical"></i> Clinic Setup</h3>
+                <form id="clinic-setup-form">
+                    <div class="form-group">
+                        <label>Clinic Name</label>
+                        <input type="text" id="clinic-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="clinic-address" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Pincode</label>
+                        <input type="text" id="clinic-pincode" maxlength="6" pattern="[0-9]{6}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="tel" id="clinic-contact" maxlength="10" pattern="[0-9]{10}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Operating Hours</label>
+                        <div class="time-inputs">
+                            <input type="time" id="clinic-opening-time" required>
+                            <input type="time" id="clinic-closing-time" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-save"></i> Save Clinic Info
+                    </button>
+                </form>
+            `;
+            
+            document.getElementById('clinic-setup-form').addEventListener('submit', handleClinicSetup);
+        }
+
+        async function handleHospitalSetup(e) {
+            e.preventDefault();
+            
+            const contact = document.getElementById('hospital-contact').value;
+            const pincode = document.getElementById('hospital-pincode').value;
+
+            if (!validatePhone(contact)) {
+                showMessage('Contact number must be exactly 10 digits', 'error');
+                return;
+            }
+
+            if (!validatePincode(pincode)) {
+                showMessage('Pincode must be exactly 6 digits', 'error');
+                return;
+            }
+
+            const hospitalData = {
+                name: document.getElementById('hospital-name').value,
+                address: document.getElementById('hospital-address').value,
+                pincode: pincode,
+                contact: contact,
+                openingTime: document.getElementById('hospital-opening-time').value,
+                closingTime: document.getElementById('hospital-closing-time').value,
+                latitude: 12.9716,
+                longitude: 77.5946,
+                bloodInventory: {
+                    A: 0, B: 0, AB: 0, O: 0
+                }
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/hospitals`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(hospitalData)
+                });
+
+                if (response.ok) {
+                    showMessage('Hospital information saved successfully!', 'success');
+                    setupHospitalDashboard();
+                } else {
+                    const data = await response.json();
+                    showMessage(data.error || 'Failed to save hospital information', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function handleClinicSetup(e) {
+            e.preventDefault();
+            
+            const contact = document.getElementById('clinic-contact').value;
+            const pincode = document.getElementById('clinic-pincode').value;
+
+            if (!validatePhone(contact)) {
+                showMessage('Contact number must be exactly 10 digits', 'error');
+                return;
+            }
+
+            if (!validatePincode(pincode)) {
+                showMessage('Pincode must be exactly 6 digits', 'error');
+                return;
+            }
+
+            const clinicData = {
+                clinicName: document.getElementById('clinic-name').value,
+                address: document.getElementById('clinic-address').value,
+                pincode: pincode,
+                contact: contact,
+                openingTime: document.getElementById('clinic-opening-time').value,
+                closingTime: document.getElementById('clinic-closing-time').value,
+                latitude: 12.9716,
+                longitude: 77.5946
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/clinics`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(clinicData)
+                });
+
+                if (response.ok) {
+                    showMessage('Clinic information saved successfully!', 'success');
+                    setupDoctorDashboard();
+                } else {
+                    const data = await response.json();
+                    showMessage(data.error || 'Failed to save clinic information', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function handleBloodStockUpdate(e) {
+            e.preventDefault();
+            
+            const bloodData = {
+                bloodInventory: {
+                    A: parseInt(document.getElementById('stock-blood-a').value) || 0,
+                    B: parseInt(document.getElementById('stock-blood-b').value) || 0,
+                    AB: parseInt(document.getElementById('stock-blood-ab').value) || 0,
+                    O: parseInt(document.getElementById('stock-blood-o').value) || 0
+                }
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/hospitals`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(bloodData)
+                });
+
+                if (response.ok) {
+                    showMessage('Blood stock updated successfully!', 'success');
+                } else {
+                    showMessage('Failed to update blood stock', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function handleEmergencyRequest(e) {
+            e.preventDefault();
+            
+            const requestData = {
+                dogName: document.getElementById('dog-name').value,
+                bloodType: document.getElementById('blood-type').value,
+                description: document.getElementById('description').value,
+                location: {
+                    latitude: 0,
+                    longitude: 0
+                }
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/emergency`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(`Emergency request submitted! ${data.notifiedHospitals} hospitals notified.`, 'success');
+                    document.getElementById('emergency-form').reset();
+                    loadEmergencyRequests();
+                } else {
+                    showMessage('Failed to submit emergency request', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function loadAppointments() {
+            try {
+                const response = await fetch(`${API_BASE}/appointments/my`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const appointments = await response.json();
+                    const container = document.getElementById('appointments-list');
+                    container.innerHTML = '';
+
+                    if (appointments.length === 0) {
+                        container.innerHTML = '<p>No appointments found.</p>';
+                        return;
+                    }
+
+                    appointments.forEach(appointment => {
+                        const appointmentItem = document.createElement('div');
+                        appointmentItem.className = `appointment-item ${appointment.status}`;
+                        
+                        const date = new Date(appointment.appointmentDate);
+                        const formattedDate = date.toLocaleDateString();
+                        
+                        let contactInfo = '';
+                        if (currentUser.role === 'owner') {
+                            contactInfo = `
+                                <p><strong>Provider:</strong> ${appointment.providerId.name}</p>
+                                <div class="contact-info">
+                                    <i class="fas fa-phone"></i> ${appointment.providerId.phone}
+                                </div>
+                            `;
+                        } else {
+                            contactInfo = `
+                                <p><strong>Patient:</strong> ${appointment.patientId.name}</p>
+                                <div class="contact-info">
+                                    <i class="fas fa-phone"></i> 
+                                    <a href="tel:${appointment.patientId.phone}" class="btn btn-success btn-small">
+                                        Call ${appointment.patientId.phone}
+                                    </a>
+                                </div>
+                            `;
+                        }
+
+                        appointmentItem.innerHTML = `
+                            <h5>${appointment.petName} - ${formattedDate} at ${appointment.appointmentTime}</h5>
+                            ${contactInfo}
+                            <p><strong>Description:</strong> ${appointment.description || 'No description'}</p>
+                            <p><strong>Status:</strong> <span class="status-${appointment.status}">${appointment.status.toUpperCase()}</span></p>
+                            ${currentUser.role !== 'owner' ? `
+                                <div style="margin-top: 10px;">
+                                    <button class="btn btn-success btn-small" onclick="updateAppointmentStatus('${appointment._id}', 'confirmed')">
+                                        Confirm
+                                    </button>
+                                    <button class="btn btn-secondary btn-small" onclick="updateAppointmentStatus('${appointment._id}', 'completed')">
+                                        Complete
+                                    </button>
+                                    <button class="btn btn-danger btn-small" onclick="updateAppointmentStatus('${appointment._id}', 'cancelled')">
+                                        Cancel
+                                    </button>
+                                </div>
+                            ` : ''}
+                        `;
+                        container.appendChild(appointmentItem);
+                    });
+                }
+            } catch (error) {
+                showMessage('Error loading appointments', 'error');
+            }
+        }
+
+        async function updateAppointmentStatus(appointmentId, status) {
+            try {
+                const response = await fetch(`${API_BASE}/appointments/${appointmentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (response.ok) {
+                    showMessage(`Appointment ${status} successfully!`, 'success');
+                    loadAppointments();
+                } else {
+                    showMessage('Failed to update appointment', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function loadProviders() {
+            const providerType = document.getElementById('provider-type').value;
+            const providerSelect = document.getElementById('provider-select');
+            
+            providerSelect.innerHTML = '<option value="">Loading...</option>';
+
+            try {
+                const endpoint = providerType === 'hospital' ? '/api/hospitals' : '/api/clinics';
+                const response = await fetch(endpoint);
+                const providers = await response.json();
+
+                providerSelect.innerHTML = '<option value="">Select a provider</option>';
+
+                providers.forEach(provider => {
+                    const option = document.createElement('option');
+                    if (providerType === 'hospital') {
+                        option.value = provider.adminId._id;
+                        option.textContent = `${provider.name} - ${provider.address}`;
+                    } else {
+                        option.value = provider.doctorId._id;
+                        option.textContent = `${provider.clinicName} - Dr. ${provider.doctorId.name}`;
+                    }
+                    providerSelect.appendChild(option);
+                });
+            } catch (error) {
+                providerSelect.innerHTML = '<option value="">Error loading providers</option>';
+            }
+        }
+
+        async function handleAppointmentBooking(e) {
+            e.preventDefault();
+
+            const appointmentData = {
+                providerId: document.getElementById('provider-select').value,
+                providerType: document.getElementById('provider-type').value,
+                petName: document.getElementById('appointment-pet-name').value,
+                appointmentDate: document.getElementById('appointment-date').value,
+                appointmentTime: document.getElementById('appointment-time').value,
+                description: document.getElementById('appointment-description').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/appointments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(appointmentData)
+                });
+
+                if (response.ok) {
+                    showMessage('Appointment booked successfully!', 'success');
+                    document.getElementById('appointment-form').reset();
+                    loadAppointments();
+                } else {
+                    showMessage('Failed to book appointment', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function loadNearestHospitals() {
+            if (!navigator.geolocation) {
+                showMessage('Geolocation is not supported by this browser', 'error');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                try {
+                    const { latitude, longitude } = position.coords;
+                    const response = await fetch(`${API_BASE}/hospitals/nearest?latitude=${latitude}&longitude=${longitude}`);
+                    const hospitals = await response.json();
+
+                    const container = document.getElementById('nearest-hospitals');
+                    container.innerHTML = '';
+
+                    if (hospitals.length === 0) {
+                        container.innerHTML = '<p>No hospitals found with available blood.</p>';
+                        return;
+                    }
+
+                    hospitals.forEach(hospital => {
+                        const hospitalCard = document.createElement('div');
+                        hospitalCard.className = `hospital-card ${hospital.status.toLowerCase()}`;
+                        hospitalCard.innerHTML = `
+                            <h4>${hospital.name}</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> ${hospital.address}</p>
+                            <p><i class="fas fa-phone"></i> 
+                                <a href="tel:${hospital.contact}" class="btn btn-success btn-small">
+                                    Call ${hospital.contact}
+                                </a>
+                            </p>
+                            <p class="distance"><i class="fas fa-route"></i> ${hospital.distance} km away</p>
+                            <p class="status-${hospital.status.toLowerCase()}">
+                                <i class="fas fa-clock"></i> ${hospital.status}
+                            </p>
+                            <div class="blood-inventory">
+                                <div class="blood-type">A: ${hospital.bloodInventory.A}</div>
+                                <div class="blood-type">B: ${hospital.bloodInventory.B}</div>
+                                <div class="blood-type">AB: ${hospital.bloodInventory.AB}</div>
+                                <div class="blood-type">O: ${hospital.bloodInventory.O}</div>
+                            </div>
+                        `;
+                        container.appendChild(hospitalCard);
+                    });
+                } catch (error) {
+                    showMessage('Error loading nearest hospitals', 'error');
+                }
+            }, (error) => {
+                showMessage('Unable to get your location. Please enable location services.', 'error');
+            });
+        }
+
+        async function loadClinics() {
+            try {
+                const response = await fetch(`${API_BASE}/clinics`);
+                const clinics = await response.json();
+
+                const container = document.getElementById('clinics-list');
+                container.innerHTML = '';
+
+                if (clinics.length === 0) {
+                    container.innerHTML = '<p>No veterinary clinics available.</p>';
+                    return;
+                }
+
+                clinics.forEach(clinic => {
+                    const clinicCard = document.createElement('div');
+                    clinicCard.className = `hospital-card ${clinic.status.toLowerCase()}`;
+                    clinicCard.innerHTML = `
+                        <h4>${clinic.clinicName}</h4>
+                        <p><strong>Doctor:</strong> ${clinic.doctorId.name}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> ${clinic.address}</p>
+                        <p><i class="fas fa-phone"></i> 
+                            <a href="tel:${clinic.contact}" class="btn btn-success btn-small">
+                                Call ${clinic.contact}
+                            </a>
+                        </p>
+                        <p class="status-${clinic.status.toLowerCase()}">
+                            <i class="fas fa-clock"></i> ${clinic.status}
+                        </p>
+                        ${clinic.openingTime && clinic.closingTime ? 
+                            `<p><i class="fas fa-business-time"></i> ${clinic.openingTime} - ${clinic.closingTime}</p>` : 
+                            '<p><i class="fas fa-business-time"></i> Hours not specified</p>'
+                        }
+                    `;
+                    container.appendChild(clinicCard);
+                });
+            } catch (error) {
+                showMessage('Error loading clinics', 'error');
+            }
+        }
+
+        async function loadEmergencyRequests() {
+            try {
+                const response = await fetch(`${API_BASE}/emergency`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const requests = await response.json();
+                    const container = document.getElementById('emergency-notifications');
+                    container.innerHTML = '';
+
+                    if (requests.length === 0) {
+                        container.innerHTML = '<p>No emergency requests found.</p>';
+                        return;
+                    }
+
+                    requests.forEach(request => {
+                        const requestItem = document.createElement('div');
+                        requestItem.className = 'emergency-item';
+                        requestItem.innerHTML = `
+                            <h5>${request.dogName} - ${request.bloodType} Blood Needed</h5>
+                            <p><strong>Owner:</strong> ${request.userId ? request.userId.name : 'Unknown'}</p>
+                            <p><strong>Description:</strong> ${request.description}</p>
+                            <p><strong>Status:</strong> <span class="status-${request.status}">${request.status}</span></p>
+                            <p><strong>Requested:</strong> ${new Date(request.timestamp).toLocaleString()}</p>
+                            ${request.userId ? `
+                                <div class="contact-info">
+                                    <a href="tel:${request.userId.phone}" class="btn btn-danger btn-small">
+                                        <i class="fas fa-phone"></i> Call Owner: ${request.userId.phone}
+                                    </a>
+                                </div>
+                            ` : ''}
+                        `;
+                        container.appendChild(requestItem);
+                    });
+                }
+            } catch (error) {
+                showMessage('Error loading emergency requests', 'error');
+            }
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('auth-message');
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('profile-section').classList.add('hidden');
+            showMessage('Logged out successfully', 'success');
+        }
+    </script>
+</body>
+</html>

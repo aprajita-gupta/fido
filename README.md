@@ -41,12 +41,6 @@
    - **Local MongoDB:** Install MongoDB and start the service
    - **MongoDB Atlas:** Create a cluster and get connection string
 
-6. **Configure environment variables (.env):**
-   ```
-   MONGO_URI=mongodb://localhost:27017/bloodbank
-   JWT_SECRET=your_secret_key_here
-   PORT=5000
-   ```
 
 7. **Start the application:**
    ```bash

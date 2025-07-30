@@ -7,6 +7,13 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
+const helmet = require('helmet');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+
+app.use(helmet());
+app.use(morgan('tiny'));
+app.use(rateLimit({ windowMs: 60_000, max: 120 })); // tweak as needed
 
 // Middleware
 app.use(cors());

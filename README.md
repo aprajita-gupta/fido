@@ -1,5 +1,5 @@
 // README.md
-# Blood Bank Management System
+# Fido
 
 ## Setup Instructions
 

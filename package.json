@@ -1,5 +1,5 @@
 {
-  "name": "blood-bank-system",
+  "name": "fido",
   "version": "1.0.0",
   "description": "Blood Bank Management System",
   "main": "server.js",
